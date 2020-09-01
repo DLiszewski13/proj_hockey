@@ -1,0 +1,186 @@
+install.packages("tidyverse")
+library(tidyverse)
+
+
+# Regular Season Team Data (teams) ----------------------------------------
+
+### loading regular season data after 1998
+teams <- read_csv("data/teams.csv", col_types = cols(
+  .default = col_double(),
+  lgID = col_character(),
+  tmID = col_character(),
+  franchID = col_character(),
+  confID = col_character(),
+  divID = col_character(),
+  playoff = col_character(),
+  OTL = col_double(),
+  SoW = col_double(),
+  SoL = col_double(),
+  name = col_character() 
+  )) %>%
+  filter(year > 1997) %>%
+  # removing lgID col (only one league exists during 1998 - 2011)
+  select(-lgID) %>%
+  # removing franchID and name columns, now stored in team_reference with tmID as the key
+  select(-c(franchID, name))
+
+## Identifying the number of teams and franchises
+teams %>%
+  summarise(n_distinct(franchID))
+
+teams$tmID
+
+unique(teams$franchID)
+
+# reveals that only 27 teams were in 1998 and 28 in 1999
+teams %>%
+  group_by(year) %>%
+  summarise(n())
+
+## finding any bench minors NA values
+sum(teams$BenchMinor == 4)
+
+teams %>%
+  summarise(n_distinct(year))
+
+
+
+# Postseason Team Data (teams_post) --------------------------------------------
+
+teams_post <- read.csv("data/TeamsPost.csv") %>%
+  filter(year > 1997) %>%
+  # removing T, lgID cols (no playoff ties 1998 - 2011)
+  select(-c(T,lgID))       
+
+# Postseason Series Data (series_post) ------------------------------------
+
+series_post <- read_csv("data/seriespost.csv") %>%
+  filter(year > 1997) %>%
+  # removing T, lgID, note cols 
+  select(-c(T,lgIDWinner,lgIDLoser,note))    
+
+# Team Splits Data (teams_splits) ------------------------------------------
+
+teams_splits <- read_csv("data/TeamSplits.csv", col_types = cols(
+  .default = col_double(),
+  lgID = col_character(),   # should explain I had to change from col_logical for some columns
+  tmID = col_character()    # identifying which columns should be specified different types
+  )) %>%
+  filter(year > 1997)
+
+
+# Regular Season Team vs Team Data (team_vs_team) -------------------------
+
+team_vs_team <- read_csv("data/TeamVsTeam.csv", col_types = cols(
+  .default = col_double(),     # specifying a default to avoid parser error selecting logical type
+  lgID = col_character(),
+  tmID = col_character(),
+  oppID = col_character()
+  )) %>% 
+  filter(year > 1997) %>%
+  select(-lgID)
+
+
+# Player Awards Data (awards_players) -------------------------------------
+
+# parsing error occurs on data for WHA players who won playoff mvp, i dont use this
+# data (old data from 1984) so it is unneccesary for my useage
+awards_players <- read_csv("data/AwardsPlayers.csv")  %>%  
+  filter(year > 1997) %>%  
+  select(-lgID) 
+
+
+# Goalie Data (goalies) ---------------------------------------------------
+
+goalies <- read.csv("data/Goalies.csv") %>%
+  filter(year > 1997) %>%
+  select(-lgID)
+
+
+# Player Scoring Data -----------------------------------------------------
+
+players <- read_csv("data/Scoring.csv") %>%
+  filter(year > 1997) %>%
+  select(-lgID)
+
+
+# Creating Team Reference df ----------------------------------------------
+
+# created a reference df for the name of each team and which historical franchise thy belong to
+# from columns in teams so I could remove name and franchID cols from teams, keeping tmId as the key
+team_reference <- teams %>% 
+  group_by(tmID) %>%
+  select(c(tmID,franchID,name)) %>%
+  distinct(tmID, .keep_all = TRUE)
+
+
+# Creating 1st round (CQF) Playoff Success df (for logistic regression) -------------------
+
+# smaller dataset for CQF teams and the result of CQF
+CQF_playoff_success <- teams %>%
+  filter(!is.na(playoff)) %>%
+  select(c(year,tmID,confID,divID, rank, playoff, Pts)) %>%
+  # New variable CQFWinner: 1 if won CQF series, 0 if lost
+  mutate(CQFWinner = ifelse(playoff == "CQF", 0, 1))
+
+# plotting logistic regression: CQFWinner vs Pts
+CQF_playoff_success %>% ggplot(aes(Pts, CQFWinner)) +
+  geom_point(aes(alpha = 0.01)) +
+  geom_smooth(method = "glm",method.args=list(family="binomial")) 
+  # xlim(min(CQF_playoff_success$Pts)-5, max(CQF_playoff_success$Pts)+5)
+
+CQF_series_post <- series_post %>%
+  filter(round == "CQF")
+
+
+# Creating 2nd round (CSF) Playoff Success df -----------------------------
+
+# wanted to check if the randomness of playoff hockey existed still in the later rounds of the playoffs
+# found that it might actually get more random since the 'best' teams are still there and fighting,
+# no matter what their record was during the regular season 
+
+# dataset for CSF teams and result
+CSF_playoff_success <- teams %>%
+  filter(!is.na(playoff)) %>%
+  filter(playoff != "CQF") %>%
+  mutate(CSFWinner = ifelse(playoff == "CSF", 0, 1))
+
+CSF_playoff_success %>% ggplot(aes(Pts, CSFWinner)) +
+  geom_point(aes(alpha = 0.01)) +
+  geom_smooth(method = "glm",method.args=list(family="binomial")) 
+
+
+# Creating 3rd round (CF) Playoff Success df ------------------------------
+
+# check 'creating 2nd round' for comments'
+
+CF_playoff_success <- teams %>%
+  filter(!is.na(playoff)) %>%
+  filter(playoff != "CQF") %>%
+  filter(playoff != "CSF") %>%
+  mutate(CFWinner = ifelse(playoff == "CF", 0, 1))
+
+CF_playoff_success %>% ggplot(aes(Pts, CFWinner)) +
+  geom_point(aes(alpha = 0.01)) +
+  geom_smooth(method = "glm",method.args=list(family="binomial")) 
+
+
+
+# Plotting logistic regression make_playoffs vs Pts -----------------------
+
+teams_tmp <- teams %>%
+  mutate(playoff_binary = !is.na(playoff))
+  
+teams_tmp$playoff_binary <- as.integer(teams_tmp$playoff_binary) 
+
+teams_tmp %>% ggplot(mapping = aes(Pts,playoff_binary)) +
+  geom_point(aes(alpha = 0.01)) +
+  geom_smooth(method = "glm",method.args=list(family="binomial"))
+
+
+
+
+
+
+
+  

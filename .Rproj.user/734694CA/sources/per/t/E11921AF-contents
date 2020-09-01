@@ -1,0 +1,47 @@
+
+##### NOTES #####
+
+remove 1998 and 1999 from the data? 
+- only 27 teams in 1998 and 28 in 1999
+
+figure out a better way to DRY 
+- especially with filtering of the year variable 
+
+teams in 1998 ties (T) column, 1999-2003 have T and OTL, 2005-2011 have OTL
+
+add goals per game, GA per game, for regular season, playoffs, series
+
+add PK%, PP% for regular season 
+
+add save% for goalies (consider empty nets?), and playoffs sv%
+
+a variable for being 'hot' coming into playoffs
+- march and april points per game maybe?
+- dummy variable?
+- points per game much greater than the first 2/4 of year?
+
+add a base home win rate col, and each teams home win rate col? (since each teams is slightly random)
+
+to compute the effect of a regressor (variable), look at chapter in econ on logistic
+
+Learn:
+- did this randonmess always exist (compare 1998 - 2004 and 2005-2011 for example)
+    - pre and post salary cap minimum 
+    - possibly check out the high goal scoring years?
+- which predictors are most important for playoff success
+
+Things to explain:
+- only using data 1998 - 2011 due to the same playoff format
+
+
+STEPS:
+- decide on a way to organize script code (function vs timeline)
+- create new variables for each dataset
+    - includes playoff win/loss (1 / 0)
+- decide on a modeling process
+    - stanley cup winner based on the 16 playoff teams, but how?
+        - predict win percentage for each team in a series, then the probability they win the next round? 
+        - or do I need game data??
+        - or do I just do it with only the data from their overall season (and recent play) to guess hey             they'll win this round, but not the next or something, idk.......
+
+

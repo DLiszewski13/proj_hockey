@@ -1,0 +1,43 @@
+
+########## ECON NOTES ##########
+
+Analysis on Regular Season Predictors of Winning in the NHL Playoffs
+
+
+PAPERS TO MENTION
+- Asia hockey games
+    - Basic determanints of wins and losses in hockey
+    - building off their work, instead using playoff and full regular season data (not game data)
+    https://www.researchgate.net/profile/Dohoon_Koo/publication/321237635_Logistic_Regression_of_Wins_and_Losses_in_Asia_League_Ice_Hockey_in_the_2014-2015_Season/links/5cbfe982a6fdcc1d49aa4198/Logistic-Regression-of-Wins-and-Losses-in-Asia-League-Ice-Hockey-in-the-2014-2015-Season.pdf
+
+- NBA relative regular season to post performance
+    - my exact idea
+    - absrtact good for idea, title to copy, etc.
+    https://www.degruyter.com/view/journals/jqas/6/3/article-jqas.2010.6.3.1260.xml.xml
+    
+- Factors contributing to ice hockey winning games
+    - Similar to asia file
+    - use abstract for which variables to use for example, explain why his model was bad using in game data
+    - http://article.sapub.org/10.5923.j.sports.20140403.02.html
+
+
+STEPS:
+- Base Mode: logistic regression:
+    - Predictor: (homeTeamPts - AwayTeamPts)
+- logistic regression: (1 = win series, 0 = lose series)
+    - look at predictors, t-tests, F-tests, 
+    - compare models with different predictors: psuedo-R^2, 
+    - come out with a "best model" for the playoffs
+        - explain effect of significant predictors, which are most relevant predictors
+- If time:
+    - compare change of model over time (pre and post salary cap)
+        - research "competitive balance" for this section
+        
+FUTURE & LIMITATIONS:
+- changes over time: rule changes
+- order logit for the model
+- game level data for use of advanced statistics
+- analysis of different rounds in the playoffs
+
+
+

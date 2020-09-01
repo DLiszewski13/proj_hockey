@@ -1,0 +1,20 @@
+##### Project Proposal Review Meeting #####
+
+Friday, 3/20, 1:00
+
+LOOK into other papers on nhl playoff success, did they use similar patterns? should I go about this in a different way?
+
+Questions:
+
+ - DRY versus readability?
+    - looking specifically at the fact I need to (filter > 1997) but also do different things to each             dataset
+ - How do you want our R scripts to look?
+    - chronological? or different sections? (Tidy section, trasnforming / exploring, etc.)
+ - I want to use the model selection process for my ECON class
+    - interpreting variable coefficient meaning, size effect, t-tests, etc.
+ - How do I turn winner / loser of series into 1 and 0 while maintaining Tidy data?
+ 
+ 
+ Notes:
+ 
+ - 

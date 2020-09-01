@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1584063143292.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "135|46|151|0|\n152|45|167|0|\n",
+    "hash" : "727741764",
+    "id" : "97243C5C",
+    "lastKnownWriteTime" : 1584748178,
+    "last_content_update" : 1584748178928,
+    "path" : "~/Documents/8th semester - Spring 2020/R/professional-hockey-database/preliminary_hockey.R",
+    "project_path" : "preliminary_hockey.R",
+    "properties" : {
+        "cursorPosition" : "132,24",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

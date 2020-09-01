@@ -1,0 +1,137 @@
+
+##### NOTES #####
+
+figure out a better way to DRY 
+- especially with filtering of the year variable 
+
+teams in 1998 ties (T) column, 1999-2003 have T and OTL, 2005-2011 have OTL
+
+puck luck variable (http://www.depthockeyanalytics.com/uncategorized/the-methodology-behind-the-si-predictions/)
+- maybe only look at shootout luck instead of one-goal games
+
+add a base home win rate col, and each teams home win rate col? (since each teams is slightly random)
+
+to compute the effect of a regressor (variable), look at chapter in econ on logistic
+
+Learn:
+- did this randonmess always exist (compare 1998 - 2004 and 2005-2011 for example)
+    - pre and post salary cap 
+    - possibly check out the high goal scoring years?
+- which predictors are most important for playoff success
+
+PAPERS/ARTICLES:
+- Methodology of NHL playoff predictions
+    - http://www.depthockeyanalytics.com/uncategorized/the-methodology-behind-the-si-predictions/
+
+- Ordinal Logistic Regression in Golf
+    - use to refernece the use of ordinal regression
+    - https://chance.amstat.org/files/2018/09/CHANCE31.3_web.pdf#page=46 
+    
+- Team Luck Calculator
+    - reference for which variables to include as 'luck' predictors
+    - http://www.hockeyabstract.com/luck
+    
+- Ordinal Logistic Regression Example in R
+    - https://stats.idre.ucla.edu/r/dae/ordinal-logistic-regression/ 
+
+
+STEPS:
+
+        
+
+
+
+THING TO LOOK AT:
+- Data Visualizaiton of goal scoring differnces between the era to decribe the change in eras
+- Even strength GD
+- Dummy of all stars, mvp
+
+YEARS AND PLAYOFF FORMATS:
+- 1979 - 1980: WHA/NHL merger: PRE,QF,SF,F,SC
+- 1981 - 1985: Divisional playoffs (5 game DSF): DSF,DF,CF,F,SC
+- 1986 - 1992: Divisional playoffs (7 game DSF): DSF,DF,CF,F,SC
+- 1993 - current: Conference playoffs: CQF,CSF,CF,F,SC
+
+ERAS (http://hockeyanalytics.com/2009/02/the-eras-of-the-nhl/)
+- Expansion: 1979 - 1986: Gretzky and high scoring
+- Goaltending years: 1987 - current: lower scoring, better goaltending gear
+
+MY ERAS:
+- 1979 - 1980: Merger Years and 16-team playoffs
+- 1981 - 1986: Gretzky and High Scoring/Divisional Playoffs
+- 1987 - 1992: High Scoring/7 Game Divisional Playoffs
+- 1993 - 1997: Transitional and Conference Playoffs (transition to less scoring)
+- 1998 - 2003: Pre-lockout and Defense/Conference Playoff Resructure (NBA type of playoffs)
+- 2005 - 2011: Post Lockout 
+
+ISSUES:
+- only using data 1979 - 2011 due to the same playoff format
+- Missing Data in teams_post 1987-1988: SHA 
+- used MVP stat on Art Ross winner, not Hart.
+- All Stars contains a double count for players who were first team and mvp (i think)
+
+FUTURE THINGS:
+- adding SA and SavePer from goalies to team data (and post?)
+- Adding Shots (SOG) and SPer (needs to be created) to team data (and post?)
+- Adding EVGF/EVGA/EVGD per game to team data (and post?)
+- Adding home ice variable (Pts > other teams pts => Home)? to series?
+
+Ordinal PACKAGES:
+- http://topepo.github.io/caret/train-models-by-tag.html#Ordinal_Outcomes 
+- ordinal: regression
+- ordinalForest: random forest
+- mass: ordinal logistic
+
+3/26/20 - 4/11/20:
+% - Replace NA values in all df where neccesary 
+    - switch funciton to rapply???
+%    - teams_splits, goalies, players need a function I think 
+    - teams_post has an issue with NA in 1987 and 1988 in SHA col
+        - no solution to this besides finding data (can't find it)
+% - Create dplyr file for mutating and joins
+% - Build function that takes in W,L,T,OTL cols and calculates Point%
+    - that way we can use mutate to create new variables for P% in each month, playoffs, etc.
+    - PtsPer relevant for teams_splits instead of Pts because teams played differnt # of G in each months
+% - series_post work
+%    - Add winPer, GD
+% - Create EDA file for exploratory data analysis
+- Work on shot on goal stat for each team (regular seaosn and playoffs)
+    - Sum goals for one team for one year from players df and see if they match up with goals in teams df
+% - awards_players work (add tmID)
+% - Goalies work (SV%, GAA, playoff_SV$,playoff_GAA)
+
+4/11/20 - 4/14/20
+% - teams 
+%    - ROW,GD, PIM/G
+%    - Goals For/Allowed/Differntial/Total goals per game
+%    - PP%, PK%, Even strength goals For/Allowed/Differnential
+% - teams_post
+%    - GD, Goals For/Allowed/Differntial per game
+%    - PP%, PK%, Even strength goals For/Allowed/Differnential, EVGF/EVGA/EVGD per game
+%    - PIM/G, Win%?
+
+4/15/20 - 
+%- complete the transform work
+%    - add award_layers, goalie, teams_splits, players(shots?) data to teams
+%    - then add teams to series_post wiht joins 
+%    - home_winner? (1 or 0) calculation
+%    - set up the ordinal data for outcome of each series (1 through 8 with a switch?)
+- split dataset
+- EDA
+    - visualization, PCA?
+    - look for nonlinearity? idk..
+- use ordinal logistic regression as first model to predict 
+    - reference NHL methodology article for summing classifications to get Prob(winning)
+    - repeat for each round
+        - compare rounds to see if theres worse/better prediciton (sample size)
+
+
+
+
+POSSIBLE INCLUSIONS:
+- Figure 3 shows the slight correlation between winning and Save Percentage. $SavePer =\frac{ShotsSaved}{ShotsFaced}$
+![Points Percentage versus Save Percentage](project_files/dotplot_PtsPer_SavePer_3.jpeg)
+
+- The model using parameter $\lambda.1SE$ succesfuly fit the data with only 16 variables. The 16 variables had coefficient values for each outcome (lose in 4, etc.), and the differnce for those values is shown in Figure 10. For example, in the training of the model, when 
+![Non-zero coefficient values for predicted outcomes "Lose in 4" and "Win in 4". The value of the coefficients is relative, and does not have an intuitive interpretation. Graphs shows factors important for winning](project_files/dotplot_coef.jpeg)
+
